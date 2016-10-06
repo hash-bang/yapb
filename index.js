@@ -1,7 +1,7 @@
 var mustache = require('mustache');
 var windowSize = require('window-size');
 
-function CLIProgress(settings) {
+function CLIProgress(text, settings) {
 	var progress = this;
 
 	progress.settings = {
@@ -19,10 +19,24 @@ function CLIProgress(settings) {
 			progress.settings.stream.cursorTo(0);
 		},
 		width: windowSize.width,
+		completeChar: '=',
+		incompleteChar: '-',
 	};
 
 	progress.format = function() {
 		var text = mustache.render(progress.settings.text, progress.settings);
+		// Rendering a bar? {{{
+		if (text.indexOf('[[BAR]]') > -1) {
+			var maxBarWidth = windowSize.width - text.length;
+			var barCompleteWidth = Math.round(progress.settings.current / progress.settings.max * maxBarWidth);
+
+			text = text.replace('[[BAR]]',
+				Array(barCompleteWidth).join(progress.settings.completeChar)
+				+
+				Array(maxBarWidth - barCompleteWidth).join(progress.settings.incompleteChar)
+			);
+		}
+		// }}}
 		return text;
 	};
 
@@ -45,19 +59,23 @@ function CLIProgress(settings) {
 		for (var k in val) {
 			progress.settings[k] = val[k];
 		}
-		if (val.text) mustache.parse(progress.settings.text);
+		if (val.text) { // Setting the formatting text?
+			progress.settings.text = progress.settings.text.replace('{{bar}}', '[[BAR]]'); // Remove mustache stuff as we have to calculate the width post-render
+			mustache.parse(progress.settings.text);
+		}
 		return progress;
 	};
 
 	// Load initial settings {{{
-	if (typeof settings == 'string') {
-		progress.set({text: settings});
+	if (typeof text == 'string') {
+		progress.set({text: text});
 	} else {
-		progress.set(settings);
+		progress.set(text);
 	}
+	if (typeof settings == 'object') progress.set(settings);
 	// }}}
 };
 
-module.exports = function CLIProgressFactory(settings) {
-	return new CLIProgress(settings);
+module.exports = function CLIProgressFactory(text, settings) {
+	return new CLIProgress(text, settings);
 };
