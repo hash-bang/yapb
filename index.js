@@ -18,7 +18,7 @@ function CLIProgress(text, settings) {
 			progress.settings.stream.write(line);
 		},
 		clear: function() {
-			progress.settings.stream.clearLine(1);
+			progress.settings.stream.clearLine(0);
 			progress.settings.stream.cursorTo(0);
 		},
 		width: windowSize.width,
