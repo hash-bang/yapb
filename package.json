@@ -1,15 +1,22 @@
 {
-  "name": "cli-progress",
+  "name": "yapb",
   "version": "1.0.0",
-  "description": "Progress display for command line applications",
+  "description": "Yet-Another-Progress-Bar - Mustache based spinners + progress bars for CLI apps",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hash-bang/yapb"
+  },
   "keywords": [
     "progress",
-    "cli",
-    "spinner"
+    "spinner",
+    "cli"
   ],
   "author": "Matt Carter <m@ttcarter.com> (https://github.com/hash-bang)",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hash-bang/yapb/issues"
+  },
   "dependencies": {
     "chalk": "^1.1.3",
     "cli-spinners": "^0.3.0",
