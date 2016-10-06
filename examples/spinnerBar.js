@@ -1,3 +1,7 @@
+/**
+* Example showing spinners, bars and dynamic text
+*/
+
 var progress = require('..');
 
 var myProgress = progress('{{spinner}} Loading widgets... [{{bar}}] {{percent}}%', {max: 300});

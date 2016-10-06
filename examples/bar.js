@@ -1,3 +1,7 @@
+/**
+* Example showing a progress bar of 30 items
+*/
+
 var progress = require('..');
 
 var myProgress = progress('Thinking deep thoughts [{{bar}}]', {max: 30});

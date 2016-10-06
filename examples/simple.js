@@ -1,3 +1,7 @@
+/**
+* Extremely basic loading page showing two pieces of text
+*/
+
 var progress = require('..');
 
 var myProgress = progress('Loading widget {{current}} of {{max}}', {max: 30});
