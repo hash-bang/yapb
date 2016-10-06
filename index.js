@@ -26,7 +26,9 @@ function CLIProgress(text, settings) {
 		incompleteChar: '-',
 		percent: function() {
 			var pText = Math.round(progress.settings.current / progress.settings.max * 100).toString();
-			return Array(3 - pText.length).join(' ') + pText; // Left pad with spaces
+			var strLen = stringLength(pText);
+			if (strLen > 3) return pText; // Already over max length
+			return Array(3 - strLen).join(' ') + pText; // Left pad with spaces
 		},
 		throttle: 50,
 
@@ -67,7 +69,7 @@ function CLIProgress(text, settings) {
 		// Rendering a bar? {{{
 		if (text.indexOf('[[BAR') > -1) {
 			var maxBarWidth = windowSize.width - stringLength(text);
-			var barCompleteWidth = Math.round(progress.settings.current / progress.settings.max * maxBarWidth);
+			var barCompleteWidth = Math.round(Math.min(progress.settings.current, progress.settings.max) / progress.settings.max * maxBarWidth);
 
 			var completeBits = Array(barCompleteWidth).join(progress.settings.completeChar);
 			var incompleteBits = maxBarWidth - barCompleteWidth > 0 ? Array(maxBarWidth - barCompleteWidth).join(progress.settings.incompleteChar) : '';
