@@ -28,6 +28,7 @@ function CLIProgress(text, settings) {
 			var pText = Math.round(progress.settings.current / progress.settings.max * 100).toString();
 			return Array(3 - pText.length).join(' ') + pText; // Left pad with spaces
 		},
+		throttle: 50,
 
 		// Spinner rendering {{{
 		spinner: '',
@@ -82,6 +83,14 @@ function CLIProgress(text, settings) {
 
 
 	/**
+	* Holder for the throttle timeout handle
+	* This will be the setTimeout() response if we are throttling
+	* @var {Object}
+	*/
+	progress.throttleHandle;
+
+
+	/**
 	* Update and re-render the progress bar
 	* This is really just a shortcut for .set() + .render(progress.format())
 	* @return {Object} This object instance
@@ -92,9 +101,25 @@ function CLIProgress(text, settings) {
 		} else {
 			progress.set(val);
 		}
+
+		if (progress.settings.throttle) {
+			if (!progress.throttleHandle) progress.throttleHandle = setTimeout(progress.updateNow, progress.settings.throttle);
+		} else { // Not using throttle anyway
+			progress.updateNow();
+		}
+
+		return progress;
+	};
+
+	/**
+	* Actual updater
+	* This is hidden behind the update throttler so its not called too many times in one cycle
+	*/
+	progress.updateNow = function() {
 		progress.refreshSpinner();
 		progress.settings.render(progress.format());
-		return progress;
+		clearTimeout(progress.throttleHandle);
+		progress.throttleHandle = null;
 	};
 
 
