@@ -1,5 +1,7 @@
 var cliSpinners = require('cli-spinners');
+var colors = require('chalk');
 var mustache = require('mustache');
+var stringLength = require('string-length');
 var windowSize = require('window-size');
 
 function CLIProgress(text, settings) {
@@ -27,17 +29,33 @@ function CLIProgress(text, settings) {
 			return Array(3 - pText.length).join(' ') + pText; // Left pad with spaces
 		},
 
+		// Spinner rendering {{{
 		spinner: '',
 		spinnerTheme: 'dots',
 		spinnerFrame: 0,
-		refreshSpinner: function() {
-			var spinnerFrames = cliSpinners[progress.settings.spinnerTheme];
-			if (!spinnerFrames) throw new Error('Spinner theme not found: "' + progress.settings.spinnerTheme + '"');
-			if (++progress.settings.spinnerFrame >= spinnerFrames.frames.length) progress.settings.spinnerFrame = 0;
-			progress.settings.spinner = spinnerFrames.frames[progress.settings.spinnerFrame];
-		},
+		// }}}
 	};
 
+	// Map all color / style functions from chalk into the settings object (e.g. bold => chalk.bold closure) {{{
+	Object.keys(colors.styles).forEach(function(style) {
+		progress.settings[style] = function() {
+			return function(text, render) {
+				return colors[style](render(text));
+			};
+		};
+	});
+	// }}}
+
+	/**
+	* Function to refresh a spinner
+	* Override this if you're using your own weird library
+	*/
+	progress.refreshSpinner = function() {
+		var spinnerFrames = cliSpinners[progress.settings.spinnerTheme];
+		if (!spinnerFrames) throw new Error('Spinner theme not found: "' + progress.settings.spinnerTheme + '"');
+		if (++progress.settings.spinnerFrame >= spinnerFrames.frames.length) progress.settings.spinnerFrame = 0;
+		progress.settings.spinner = spinnerFrames.frames[progress.settings.spinnerFrame];
+	};
 
 	/**
 	* Return the output that will be sent to the output stream
@@ -46,15 +64,17 @@ function CLIProgress(text, settings) {
 	progress.format = function() {
 		var text = mustache.render(progress.settings.text, progress.settings);
 		// Rendering a bar? {{{
-		if (text.indexOf('[[BAR]]') > -1) {
-			var maxBarWidth = windowSize.width - text.length;
+		if (text.indexOf('[[BAR') > -1) {
+			var maxBarWidth = windowSize.width - stringLength(text);
 			var barCompleteWidth = Math.round(progress.settings.current / progress.settings.max * maxBarWidth);
 
-			text = text.replace('[[BAR]]',
-				Array(barCompleteWidth).join(progress.settings.completeChar)
-				+
-				Array(maxBarWidth - barCompleteWidth).join(progress.settings.incompleteChar)
-			);
+			var completeBits = Array(barCompleteWidth).join(progress.settings.completeChar);
+			var incompleteBits = maxBarWidth - barCompleteWidth > 0 ? Array(maxBarWidth - barCompleteWidth).join(progress.settings.incompleteChar) : '';
+
+			text = text
+				.replace(/\[\[BAR\]\]/g, completeBits + incompleteBits)
+				.replace(/\[\[BAR.complete\]\]/ig, completeBits)
+				.replace(/\[\[BAR.incomplete\]\]/ig, incompleteBits)
 		}
 		// }}}
 		return text;
@@ -72,7 +92,7 @@ function CLIProgress(text, settings) {
 		} else {
 			progress.set(val);
 		}
-		progress.settings.refreshSpinner();
+		progress.refreshSpinner();
 		progress.settings.render(progress.format());
 		return progress;
 	};
@@ -99,7 +119,7 @@ function CLIProgress(text, settings) {
 			progress.settings[k] = val[k];
 		}
 		if (val.text) { // Setting the formatting text?
-			progress.settings.text = progress.settings.text.replace('{{bar}}', '[[BAR]]'); // Remove mustache stuff as we have to calculate the width post-render
+			progress.settings.text = progress.settings.text.replace(/\{\{bar(.*?)\}\}/g, '[[BAR$1]]'); // Remove mustache stuff as we have to calculate the width post-render
 			mustache.parse(progress.settings.text);
 		}
 		return progress;
