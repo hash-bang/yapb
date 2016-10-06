@@ -1,0 +1,17 @@
+{
+  "name": "cli-progress",
+  "version": "0.0.0",
+  "description": "Progress display for command line applications",
+  "main": "index.js",
+  "keywords": [
+    "progress",
+    "cli",
+    "spinner"
+  ],
+  "author": "Matt Carter <m@ttcarter.com> (https://github.com/hash-bang)",
+  "license": "MIT",
+  "dependencies": {
+    "mustache": "^2.2.1",
+    "window-size": "^0.2.0"
+  }
+}
