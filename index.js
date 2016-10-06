@@ -23,6 +23,11 @@ function CLIProgress(text, settings) {
 		incompleteChar: '-',
 	};
 
+
+	/**
+	* Return the output that will be sent to the output stream
+	* return {string} The raw console-suitable output
+	*/
 	progress.format = function() {
 		var text = mustache.render(progress.settings.text, progress.settings);
 		// Rendering a bar? {{{
@@ -40,6 +45,12 @@ function CLIProgress(text, settings) {
 		return text;
 	};
 
+
+	/**
+	* Update and re-render the progress bar
+	* This is really just a shortcut for .set() + .render(progress.format())
+	* @return {Object} This object instance
+	*/
 	progress.update = function(val) {
 		if (typeof val == 'number') {
 			progress.set({current: val});
@@ -50,11 +61,22 @@ function CLIProgress(text, settings) {
 		return progress;
 	};
 
+
+	/**
+	* Remove the bar from the screen
+	* @return {Object} This object instance
+	*/
 	progress.remove = function() {
 		progress.settings.clear();
 		return progress;
 	};
 
+
+	/**
+	* Set one or more options
+	* @param {Object} val The object values to set
+	* @return {Object} This object instance
+	*/
 	progress.set = function(val) {
 		for (var k in val) {
 			progress.settings[k] = val[k];
@@ -65,6 +87,7 @@ function CLIProgress(text, settings) {
 		}
 		return progress;
 	};
+
 
 	// Load initial settings {{{
 	if (typeof text == 'string') {
