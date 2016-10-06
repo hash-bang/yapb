@@ -1,3 +1,4 @@
+var cliSpinners = require('cli-spinners');
 var mustache = require('mustache');
 var windowSize = require('window-size');
 
@@ -5,7 +6,7 @@ function CLIProgress(text, settings) {
 	var progress = this;
 
 	progress.settings = {
-		text: '{{current}} / {{max}} [BAR]',
+		text: '{{current}} / {{max}} [{{bar}}] {{percent%}}',
 		current: 0,
 		max: 100,
 		stream: process.stderr,
@@ -21,6 +22,20 @@ function CLIProgress(text, settings) {
 		width: windowSize.width,
 		completeChar: '=',
 		incompleteChar: '-',
+		percent: function() {
+			var pText = Math.round(progress.settings.current / progress.settings.max * 100).toString();
+			return Array(3 - pText.length).join(' ') + pText; // Left pad with spaces
+		},
+
+		spinner: '',
+		spinnerTheme: 'dots',
+		spinnerFrame: 0,
+		refreshSpinner: function() {
+			var spinnerFrames = cliSpinners[progress.settings.spinnerTheme];
+			if (!spinnerFrames) throw new Error('Spinner theme not found: "' + progress.settings.spinnerTheme + '"');
+			if (++progress.settings.spinnerFrame >= spinnerFrames.frames.length) progress.settings.spinnerFrame = 0;
+			progress.settings.spinner = spinnerFrames.frames[progress.settings.spinnerFrame];
+		},
 	};
 
 
@@ -57,6 +72,7 @@ function CLIProgress(text, settings) {
 		} else {
 			progress.set(val);
 		}
+		progress.settings.refreshSpinner();
 		progress.settings.render(progress.format());
 		return progress;
 	};
@@ -78,6 +94,7 @@ function CLIProgress(text, settings) {
 	* @return {Object} This object instance
 	*/
 	progress.set = function(val) {
+		if (!val) return;
 		for (var k in val) {
 			progress.settings[k] = val[k];
 		}

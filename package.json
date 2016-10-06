@@ -11,6 +11,7 @@
   "author": "Matt Carter <m@ttcarter.com> (https://github.com/hash-bang)",
   "license": "MIT",
   "dependencies": {
+    "cli-spinners": "^0.3.0",
     "mustache": "^2.2.1",
     "window-size": "^0.2.0"
   }
