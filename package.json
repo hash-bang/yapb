@@ -1,6 +1,6 @@
 {
   "name": "yapb",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Yet-Another-Progress-Bar - Mustache based spinners + progress bars for CLI apps",
   "main": "index.js",
   "repository": {
