@@ -130,6 +130,7 @@ function CLIProgress(text, settings) {
 	* @return {Object} This object instance
 	*/
 	progress.remove = function() {
+		clearTimeout(progress.throttleHandle); // Release any throttled redraws that may be queued
 		progress.settings.clear();
 		return progress;
 	};
