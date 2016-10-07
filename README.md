@@ -12,6 +12,7 @@ Progress bars, spinners and updating statistics for CLI processes!
 * Very simple syntax where any setting can be changed at any time - even the template
 * 'Lazy' initialization of values, you can setup the progress bar before knowing any of the data you will be feeding into it (setting the 'maximum' is usually required by all other progress libraries)
 * Works fully without any 'raw' values - use it purely for spinners or other dynamic text
+* Works in a [fully synchronous environment](examples/throttling-sync.js)
 
 
 ```javascript

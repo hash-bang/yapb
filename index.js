@@ -31,6 +31,7 @@ function CLIProgress(text, settings) {
 			return Array(3 - strLen).join(' ') + pText; // Left pad with spaces
 		},
 		throttle: 50,
+		throttleSync: false,
 
 		// Spinner rendering {{{
 		spinner: '',
@@ -104,8 +105,9 @@ function CLIProgress(text, settings) {
 		progress.set(val);
 
 		if (progress.settings.throttle && progress.settings.throttleSync) { // Employ sync throttling method (count from last update)
-			// if (Date.now() >= progress.lastUpdate + progress.settings.throttle) progress.updateNow(); // Only allow redraw if we're within the update window
-			progress.updateNow();
+			if (!progress.lastUpdate || Date.now() >= progress.lastUpdate + progress.settings.throttle) {
+				progress.updateNow(); // Only allow redraw if we're within the update window
+			}
 		} else if (progress.settings.throttle) { // Employ async throttling method (setTimeout)
 			if (!progress.throttleHandle) progress.throttleHandle = setTimeout(progress.updateNow, progress.settings.throttle);
 		} else { // Not using throttle anyway
@@ -115,11 +117,21 @@ function CLIProgress(text, settings) {
 		return progress;
 	};
 
+
+	/**
+	* The timestamp in milliseconds of the last update event
+	* This is used when employing the synchronous throttling method
+	* @var {date}
+	*/
+	progress.lastUpdate;
+
+
 	/**
 	* Actual updater
 	* This is hidden behind the update throttler so its not called too many times in one cycle
 	*/
 	progress.updateNow = function() {
+		progress.lastUpdate = Date.now();
 		progress.refreshSpinner();
 		progress.settings.render(progress.format());
 		clearTimeout(progress.throttleHandle);
@@ -133,6 +145,7 @@ function CLIProgress(text, settings) {
 	*/
 	progress.remove = function() {
 		clearTimeout(progress.throttleHandle); // Release any throttled redraws that may be queued
+		progress.throttleHandle = null;
 		progress.settings.clear();
 		return progress;
 	};
