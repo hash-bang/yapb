@@ -8,7 +8,7 @@ function CLIProgress(text, settings) {
 	var progress = this;
 
 	progress.settings = {
-		text: '{{current}} / {{max}} [{{bar}}] {{percent%}}',
+		text: '{{current}} / {{max}} [{{bar}}] {{percent}}%',
 		current: 0,
 		max: 100,
 		stream: process.stderr,

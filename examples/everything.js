@@ -60,13 +60,14 @@ for (var l = 0; l < windowSize.height - 2; l++) {
 						pick(['Loading', 'Thinking', 'Gesticulating', 'Calculating', 'Scheming', 'Conniving', 'Designing', 'Conspiring']) + '...'
 					);
 				case 'bar':
-					setup.completeChar = pick(['=', '+', 'X']);
-					setup.incompleteChar = pick([' ', ' ', '_', '-']);
 					if (maybe(30)) { // Fancy bar?
 						var col = pick(['bgWhite', 'bgRed', 'bgYellow', 'bgBlue', 'bgMagenta', 'bgCyan']); // Formatting color to use
-						setup.completeChar = pick([' ', ' ', ' ', ' ', 'X', '=']);
+						setup.completeChar = pick([' ', ' ', ' ', ' ', 'X', '=', '+', '|', '\\', '/', '@', '#', '>']); // Valid bar characters when colored bar
+						setup.incompleteChar = pick([' ', ' ', '|', '.', '-']);
 						return '[{{#' + col + '}}{{bar.complete}}{{/' + col + '}}{{bar.incomplete}}]';
 					} else {
+						setup.completeChar = pick(['=', '+', 'X', '|', '\\', '/', '*', '@', '#', '>']); // Valid bar characters when white on black
+						setup.incompleteChar = pick([' ', ' ', '_', '-', '.']);
 						return '[{{bar}}]';
 					}
 				case 'percent': return '{{percent}}%';
