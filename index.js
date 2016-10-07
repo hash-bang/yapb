@@ -70,7 +70,7 @@ function CLIProgress(text, settings) {
 		if (text.indexOf('[[BAR') > -1) {
 			var maxBarWidth = windowSize.width - stringLength(text);
 			if (!progress.settings.max) progress.settings.max = progress.settings.current > 0 ? progress.settings.current : 0;
-			var barCompleteWidth = Math.round(Math.min(progress.settings.current, progress.settings.max) / (progress.settings.max * maxBarWidth));
+			var barCompleteWidth = Math.round(progress.settings.current / progress.settings.max * maxBarWidth);
 
 			var completeBits = Array(barCompleteWidth).join(progress.settings.completeChar);
 			var incompleteBits = maxBarWidth - barCompleteWidth > 0 ? Array(maxBarWidth - barCompleteWidth).join(progress.settings.incompleteChar) : '';
