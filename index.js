@@ -23,7 +23,7 @@ function CLIProgress(text, settings) {
 		},
 		width: windowSize.width,
 		completeChar: '=',
-		incompleteChar: '-',
+		incompleteChar: ' ',
 		percent: function() {
 			var pText = Math.round(progress.settings.current / progress.settings.max * 100).toString();
 			var strLen = stringLength(pText);
