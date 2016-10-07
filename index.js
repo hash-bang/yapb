@@ -33,11 +33,14 @@ function CLIProgress(text, settings) {
 		throttle: 50,
 		throttleSync: false,
 
-		// Spinner rendering {{{
-		spinner: '',
 		spinnerTheme: 'dots',
 		spinnerFrame: 0,
-		// }}}
+		spinner: function() {
+			var spinnerFrames = cliSpinners[progress.settings.spinnerTheme];
+			if (!spinnerFrames) throw new Error('Spinner theme not found: "' + progress.settings.spinnerTheme + '"');
+			if (++progress.settings.spinnerFrame >= spinnerFrames.frames.length) progress.settings.spinnerFrame = 0;
+			return spinnerFrames.frames[progress.settings.spinnerFrame];
+		},
 	};
 
 	// Map all color / style functions from chalk into the settings object (e.g. bold => chalk.bold closure) {{{
@@ -49,17 +52,6 @@ function CLIProgress(text, settings) {
 		};
 	});
 	// }}}
-
-	/**
-	* Function to refresh a spinner
-	* Override this if you're using your own weird library
-	*/
-	progress.refreshSpinner = function() {
-		var spinnerFrames = cliSpinners[progress.settings.spinnerTheme];
-		if (!spinnerFrames) throw new Error('Spinner theme not found: "' + progress.settings.spinnerTheme + '"');
-		if (++progress.settings.spinnerFrame >= spinnerFrames.frames.length) progress.settings.spinnerFrame = 0;
-		progress.settings.spinner = spinnerFrames.frames[progress.settings.spinnerFrame];
-	};
 
 	/**
 	* Return the output that will be sent to the output stream
@@ -132,7 +124,6 @@ function CLIProgress(text, settings) {
 	*/
 	progress.updateNow = function() {
 		progress.lastUpdate = Date.now();
-		progress.refreshSpinner();
 		progress.settings.render(progress.format());
 		clearTimeout(progress.throttleHandle);
 		progress.throttleHandle = null;

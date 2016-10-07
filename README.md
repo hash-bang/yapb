@@ -55,9 +55,9 @@ You can define your own properties, tokens and templates as needed at any time. 
 | `percent`        | Function | *see code*       | Simple pre-prepared template function to return a number between 0 - 100 representing the process of `current / max * 100`  |
 | `throttle`       | number   | 50               | Restrict redrawing to this many milliseconds. Set this to any falsy value to disable throttling                             |
 | `throttleSync`   | boolean  | false            | Set this to true if the bar needs redrawing in a synchronous environment where tick'd redraws are unavailable               |
-| `spinner`        | string   | none             | The current spinner. This will be advanced automatically by `refreshSpinner()`                                              |
+| `spinner`        | Function | *see code*       | Spinner rendering function. This function is called on each draw phase to return the current spinner                        |
 | `spinnerTheme`   | string   | `dots`           | The spinner theme within [cli-spinners](https://github.com/sindresorhus/cli-spinners) to use when drawing the spinner       |
-| `spinnerFrame`   | number   | 0                | The current spinner animation frame. This is incremented automatically by `refreshSpinner()`                                |
+| `spinnerFrame`   | number   | 0                | The current spinner animation frame. This is used by the `spinner` callback to store its current position                   |
 
 
 
@@ -85,11 +85,6 @@ Remove the object from the screen.
 format()
 --------
 Return the current, formatted text representing the object.
-
-
-refreshSpinner()
-----------------
-Function used to advance the spinner to the next frame.
 
 
 updateNow()
