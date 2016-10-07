@@ -96,16 +96,17 @@ function CLIProgress(text, settings) {
 	/**
 	* Update and re-render the progress bar
 	* This is really just a shortcut for .set() + .render(progress.format())
+	* @params {Object|number} Either set a number of properties or the 'current' value if passed a number
 	* @return {Object} This object instance
+	* @see set()
 	*/
 	progress.update = function(val) {
-		if (typeof val == 'number') {
-			progress.set({current: val});
-		} else {
-			progress.set(val);
-		}
+		progress.set(val);
 
-		if (progress.settings.throttle) {
+		if (progress.settings.throttle && progress.settings.throttleSync) { // Employ sync throttling method (count from last update)
+			// if (Date.now() >= progress.lastUpdate + progress.settings.throttle) progress.updateNow(); // Only allow redraw if we're within the update window
+			progress.updateNow();
+		} else if (progress.settings.throttle) { // Employ async throttling method (setTimeout)
 			if (!progress.throttleHandle) progress.throttleHandle = setTimeout(progress.updateNow, progress.settings.throttle);
 		} else { // Not using throttle anyway
 			progress.updateNow();
@@ -138,18 +139,24 @@ function CLIProgress(text, settings) {
 
 
 	/**
-	* Set one or more options
-	* @param {Object} val The object values to set
+	* Set one or more options or tokens
+	* NOTE: Unlike .set() this function DOES NOT refresh the progress bar
+	* @params {Object|number} Either set a number of properties or the 'current' value if passed a number
 	* @return {Object} This object instance
+	* @see set()
 	*/
 	progress.set = function(val) {
 		if (!val) return;
-		for (var k in val) {
-			progress.settings[k] = val[k];
-		}
-		if (val.text) { // Setting the formatting text?
-			progress.settings.text = progress.settings.text.replace(/\{\{bar(.*?)\}\}/g, '[[BAR$1]]'); // Remove mustache stuff as we have to calculate the width post-render
-			mustache.parse(progress.settings.text);
+		if (typeof val == 'number') {
+			progress.settings.current = val;
+		} else {
+			for (var k in val) {
+				progress.settings[k] = val[k];
+			}
+			if (val.text) { // Setting the formatting text?
+				progress.settings.text = progress.settings.text.replace(/\{\{bar(.*?)\}\}/g, '[[BAR$1]]'); // Remove mustache stuff as we have to calculate the width post-render
+				mustache.parse(progress.settings.text);
+			}
 		}
 		return progress;
 	};
