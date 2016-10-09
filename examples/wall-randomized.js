@@ -1,5 +1,6 @@
 /**
 * Pretty much an entire screen of spinners, bars and assorted madness
+* The contents of each line is randomly chosen from all available styles
 */
 
 var colors = require('chalk');
