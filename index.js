@@ -61,9 +61,10 @@ function CLIProgress(text, settings) {
 		var text = mustache.render(progress.settings.text, progress.settings);
 		// Rendering a bar? {{{
 		if (text.indexOf('[[BAR') > -1) {
-			var maxBarWidth = windowSize.width - stringLength(text);
+			var maxBarWidth = (windowSize.width || 80) - stringLength(text);
 			if (!progress.settings.max) progress.settings.max = progress.settings.current > 0 ? progress.settings.current : 0;
 			var barCompleteWidth = Math.round(progress.settings.current / progress.settings.max * maxBarWidth);
+			if (barCompleteWidth == NaN || !barCompleteWidth) barCompleteWidth = 0;
 
 			var completeBits = Array(barCompleteWidth).join(progress.settings.completeChar);
 			var incompleteBits = maxBarWidth - barCompleteWidth > 0 ? Array(maxBarWidth - barCompleteWidth).join(progress.settings.incompleteChar) : '';
