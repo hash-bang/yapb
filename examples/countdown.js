@@ -3,7 +3,7 @@
 */
 
 var progress = require('..');
-var max = 30; // What we are counting down from
+var max = 30; // What we are counting down from in seconds
 max *= 4; // Multiply by four so we get a smooth update every 1/4th of a second
 
 var myProgress = progress('{{spinner}} Countdown: {{eta}}', {

@@ -4,7 +4,7 @@
 
 var progress = require('..');
 
-var myProgress = progress('Thinking deep thoughts [{{bar}}]', {max: 30});
+var myProgress = progress('Thinking deep thoughts [{{bar}}] {{percent}}%', {max: 30});
 
 var current = 0;
 var tick = function() {

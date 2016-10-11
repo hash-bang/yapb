@@ -4,6 +4,10 @@ var mustache = require('mustache');
 var stringLength = require('string-length');
 var windowSize = require('window-size');
 
+// Utility functions {{{
+var padStart = (str,len,char) => char.repeat(len - str.length) + str;
+// }}}
+
 function CLIProgress(text, settings) {
 	var progress = this;
 
@@ -28,15 +32,59 @@ function CLIProgress(text, settings) {
 			var pText = Math.round(progress.settings.current / progress.settings.max * 100).toString();
 			var strLen = stringLength(pText);
 			if (strLen > 3) return pText; // Already over max length
-			return Array(3 - strLen).join(' ') + pText; // Left pad with spaces
+			return padStart(pText, 3, ' '); // Left pad with spaces
 		},
 		throttle: 50,
 		throttleSync: false,
 
 		startTime: Date.now(),
+		etaFormat: 'auto',
 		eta: function() {
 			var remaining = progress.settings.current >= progress.settings.total ? 0 : (Date.now() - progress.settings.startTime) * (progress.settings.max / progress.settings.current - 1);
-			return ((isNaN(remaining) || !isFinite(remaining)) ? '0.0' : (remaining / 1000)).toFixed(1);
+
+			if (isNaN(remaining) || !isFinite(remaining)) remaining = 0;
+
+			// ETA formatting {{{
+			switch (progress.settings.etaFormat) {
+				case 'auto':
+					var hour = Math.floor(remaining / (60 * 60 * 1000));
+					remaining = remaining % (60*60*1000);
+					var min = Math.floor(remaining / (60 * 1000));
+					remaining = remaining % (60*1000);
+					var sec = Math.floor(remaining / (1000));
+					if (hour > 0) {
+						return hour + ':' + padStart(min.toString(), 2, '0') + ':' + padStart(sec.toString(), 2, '0');
+					} else if (min > 0) {
+						return min + ':' + padStart(sec.toString(), 2, '0');
+					} else {
+						return (remaining / 1000).toFixed(1);
+					}
+					break;
+				case 'H:M:s.S':
+				case 'H:M:s':
+					var hour = Math.floor(remaining / (60 * 60 * 1000));
+					remaining = remaining % (60*60*1000);
+					var min = Math.floor(remaining / (60 * 1000));
+					remaining = remaining % (60*1000);
+					var sec = Math.floor(remaining / (1000));
+					remaining = remaining % 1000;
+					var fraction = '.' + (remaining / 1000).toFixed(1).substr(2);
+					return hour + ':' + padStart(min.toString(), 2, '0') + ':' + padStart(sec.toString(), 2, '0') + (progress.settings.etaFormat.endsWith('.S') ? fraction : '');
+					break;
+				case 'M:s.S':
+				case 'M:s':
+					var min = Math.floor(remaining / (60 * 1000));
+					remaining = remaining % (60*1000);
+					var sec = Math.floor(remaining / (1000));
+					remaining = remaining % 1000;
+					var fraction = '.' + (remaining / 1000).toFixed(1).substr(2);
+					return min + ':' + padStart(sec.toString(), 2, '0') + (progress.settings.etaFormat.endsWith('.S') ? fraction : '');
+					break;
+				case 's':
+				case 's.S':
+					return (remaining / 1000).toFixed(progress.settings.etaFormat.endsWith('.S') ? 1 : 0);
+			}
+			// }}}
 		},
 
 		spinnerTheme: 'dots',

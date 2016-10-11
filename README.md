@@ -60,6 +60,7 @@ You can define your own properties, tokens and templates as needed at any time. 
 | `spinnerFrame`   | number   | 0                | The current spinner animation frame. This is used by the `spinner` callback to store its current position                   |
 | `startTime`      | number   | `Date.now()`     | Timestamp in milliseconds when the object was created (used to calculate `eta`)                                             |
 | `eta`            | Function | *see code*       | The render function used to calculate and output the estimated completion time using `startTime` and `current` as a guide   |
+| `etaFormat`      | string   | `auto`           | Formatting for the ETA display. This broadly follows the moment convention. Options: `auto`, `H:M:s.S`, `H:M:s`, `M:s.S`, `M:s`, `s`, `s.S` |
 
 
 
