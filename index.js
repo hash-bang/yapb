@@ -33,6 +33,12 @@ function CLIProgress(text, settings) {
 		throttle: 50,
 		throttleSync: false,
 
+		startTime: Date.now(),
+		eta: function() {
+			var remaining = progress.settings.current >= progress.settings.total ? 0 : (Date.now() - progress.settings.startTime) * (progress.settings.max / progress.settings.current - 1);
+			return ((isNaN(remaining) || !isFinite(remaining)) ? '0.0' : (remaining / 1000)).toFixed(1);
+		},
+
 		spinnerTheme: 'dots',
 		spinnerFrame: 0,
 		spinner: function() {

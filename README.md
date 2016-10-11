@@ -58,6 +58,8 @@ You can define your own properties, tokens and templates as needed at any time. 
 | `spinner`        | Function | *see code*       | Spinner rendering function. This function is called on each draw phase to return the current spinner                        |
 | `spinnerTheme`   | string   | `dots`           | The spinner theme within [cli-spinners](https://github.com/sindresorhus/cli-spinners) to use when drawing the spinner       |
 | `spinnerFrame`   | number   | 0                | The current spinner animation frame. This is used by the `spinner` callback to store its current position                   |
+| `startTime`      | number   | `Date.now()`     | Timestamp in milliseconds when the object was created (used to calculate `eta`)                                             |
+| `eta`            | Function | *see code*       | The render function used to calculate and output the estimated completion time using `startTime` and `current` as a guide   |
 
 
 
